@@ -33,7 +33,7 @@ layout
       :empty="tasks.length === 0",
       :loading="loading",
       message="Nenhuma atividade cadastrada",
-      :header="['Concluido', 'Descrição', 'Tipo', 'Inicio', 'Prazo', 'Conclusão' ,'Ações']"
+      :header="['Concluido', 'Descrição', 'Tipo', 'Inicio', 'Prazo', 'Conclusão', 'Ações']"
     )
       tr(v-for="(g, index) in tasks", :key="index")
         td(width="10%")
@@ -121,7 +121,7 @@ import Card from "../../components/generics/card/Card";
 import ModalDefault from "../../components/generics/modal/ModalDefault";
 import Datepicker from "vuejs-datepicker";
 import { ptBR } from "vuejs-datepicker/src/locale";
-import { getOnlyDate } from "./../../helpers/utils"
+import { getOnlyDate } from "./../../helpers/utils";
 
 import axios from "axios";
 import Storage from "local-storage-firmino";
@@ -178,7 +178,6 @@ export default {
     };
   },
   methods: {
-
     // Limpa os filtros de pesquisa
     cleanFilter() {
       this.filter = {
@@ -202,7 +201,7 @@ export default {
     conclude(task) {
       Task.check(task).then((resp) => {
         this.$toast.success("Atividade concluida");
-        this.load()
+        this.load();
       });
     },
     // Configura as datas que devem ser bloqueadas no
@@ -226,8 +225,10 @@ export default {
     },
     // Exclui uma atividade
     async deleteTask(id) {
-      this.$toast.success("Atividade excluida com sucesso!");
-      this.load();
+      Task.delete(id).then((resp) => {
+        this.$toast.success("Atividade excluida com sucesso!");
+        this.load();
+      });
     },
     // Cria ou atualiza uma atividade
     async saveOrUpdate() {
@@ -325,5 +326,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>
