@@ -9,6 +9,7 @@ use Carbon\Traits\Date;
 use Exception;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Carbon\Carbon;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use TaskValidation;
 
 class TaskRepository implements RepositoryInterface
@@ -65,6 +66,10 @@ class TaskRepository implements RepositoryInterface
         return $tasks;
     }
 
+    /**
+     * Recupera todos os registros do banco
+     * @return LengthAwarePaginator
+     */
     public function getAll()
     {
         $tasks = $this->model
@@ -122,6 +127,12 @@ class TaskRepository implements RepositoryInterface
         }
     }
 
+    /**
+     * Atualiza um registro do banco de dados
+     * @param int $task
+     * @param array $data
+     * @return array
+     */
     public function updateById(int $task, array $data)
     {
         // Caso não exista conflito de datas prossegue o cadastro no banco
@@ -179,6 +190,11 @@ class TaskRepository implements RepositoryInterface
         }
     }
 
+    /**
+     * Remove um registro do banco de dados
+     * @param int $id
+     * @return array|bool|mixed|null
+     */
     public function deleteById(int $id)
     {
         try {
@@ -203,9 +219,6 @@ class TaskRepository implements RepositoryInterface
     private function checkConflictDates($start, $end, $taskID = null)
     {
         try {
-//            $start = explode('T', $start)[0];
-//            $end = explode('T', $end)[0];
-
             // Tenta recuperar atividades conflitantes com a data de inicio e prazo final
             $taskOfUser = auth()->user()->tasks()
                 ->whereDate('start_at', '<=', $start)

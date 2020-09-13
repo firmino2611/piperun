@@ -19,8 +19,7 @@ class TaskController extends Controller
     }
 
     /**
-     * Display a listing of the taks.
-     *
+     * Recupera todas as atividades
      * @return JsonResponse
      */
     public function index()
@@ -30,6 +29,14 @@ class TaskController extends Controller
             200);
     }
 
+    /**
+     * Recupera as atividades com inicio dentro o
+     * range de datas enviadas
+     * @param $start
+     * @param $end
+     * @return JsonResponse
+     * @throws \Exception
+     */
     public function filterStart($start, $end)
     {
         return response()->json(
@@ -45,7 +52,7 @@ class TaskController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Cria uma nova atividade no banco de dados
      *
      * @param Request $request
      * @return JsonResponse
@@ -57,19 +64,9 @@ class TaskController extends Controller
             ), 200);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param int|String $param
-     * @return void
-     */
-    public function show($param)
-    {
-
-    }
 
     /**
-     * Update the specified resource in storage.
+     * Atualiza uma atividade especifica
      *
      * @param Request $request
      * @param int $id
@@ -83,7 +80,7 @@ class TaskController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Exclui do banco de dados uma atividade
      *
      * @param int $id
      * @return JsonResponse

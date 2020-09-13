@@ -27,6 +27,11 @@ class TypeController extends Controller
         );
     }
 
+    /**
+     * Cria um novo registro de tipo
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function store(Request $request)
     {
         return response()->json(
@@ -35,6 +40,12 @@ class TypeController extends Controller
         );
     }
 
+    /**
+     * Atualiza um registro de tipo
+     * @param Request $request
+     * @param int $id
+     * @return JsonResponse
+     */
     public function update(Request $request, int $id)
     {
         return response()->json(
@@ -43,6 +54,11 @@ class TypeController extends Controller
         );
     }
 
+    /**
+     * Excluir um tipo do banco de dados
+     * @param $id
+     * @return JsonResponse
+     */
     public function destroy($id)
     {
         return response()->json(
