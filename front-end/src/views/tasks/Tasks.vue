@@ -104,7 +104,6 @@ layout
         .icheck-info
           input#enable.form-control(type="checkbox", v-model="task.status")
           label(for="enable") Concluído
-      p {{ task }}
 
     span(slot="actions")
       button.btn.btn-primary.btn-xs(

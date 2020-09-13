@@ -15,7 +15,7 @@ class TypeRepository implements RepositoryInterface
 
     public function getAll()
     {
-        return $this->model->all();
+        return auth()->user()->types;
     }
 
     public function getById(int $id)
