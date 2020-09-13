@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Desafio PipeRun</title>
+    <link rel="icon" type="image/png" href="static/img/brand/piperun.png">
+    <!--    <script src="static/plugins/jquery-ui/jquery-ui.css"></script>-->
+
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- icheck bootstrap -->
+    <link rel="stylesheet" href="static/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="static/plugins/fontawesome-free/css/all.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="static/plugins/select2/css/select2.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="static/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <!-- Google Font: Source Sans Pro -->
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+        .scrol-custom {
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        
+        .scrol-custom::-webkit-scrollbar-track {
+            background-color: #F4F4F4;
+        }
+        
+        input,
+        select {
+            padding: 0.5em 0.5em;
+            font-size: 100%;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+        
+        .block-type {
+            padding: 15px 10px;
+            background-color: #000;
+            cursor: pointer;
+        }
+        
+        .has-error {
+            border-color: red;
+            border-width: 2px;
+        }
+        
+        bord .scrol-custom::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+            background: #F4F4F4;
+        }
+        
+        .scrol-custom::-webkit-scrollbar-thumb {
+            background: #6f42c1;
+        }
+        
+        .badge-info {
+            background-color: red
+        }
+        
+        #page-container,
+        #sidebar {
+            background-color: #333;
+        }
+        
+        .nav.navbar-nav-custom>li.open>a,
+        .nav.navbar-nav-custom>li>a:hover,
+        .nav.navbar-nav-custom>li>a:focus {
+            background: #eeeeee;
+            color: black;
+        }
+        
+        .has-error input.form-control {
+            border-color: red;
+            border-width: 2px;
+        }
+        
+        .has-success input.form-control {
+            border-color: green;
+            border-width: 2px;
+        }
+        
+        .form-control:focus {
+            border-color: rgba(0, 0, 0)
+        }
+        
+        .btn-primary {
+            background-color: #1ab9d2;
+            border-color: #1ab9d2
+        }
+        
+        .btn-primary:hover,
+        .btn-primary:focus {
+            background-color: #1ab9d2;
+            border-color: #1ab9d2
+        }
+        
+        .btn {
+            padding: 7px 20px;
+            border-radius: 8px;
+            font-family: 'Open Sans', sans-serif;
+        }
+        
+        .mobi-input {
+            position: relative;
+        }
+        
+        .mobi-input input {
+            background-color: #f2f2f2;
+            border-radius: 50px;
+        }
+        
+        .mobi-input i {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            z-index: 10;
+            font-size: 20px;
+        }
+        
+        .mobi-icon {
+            border-radius: 70px;
+            padding: 20px;
+            width: 120px;
+            height: 120px;
+            margin: 20px 0px;
+        }
+        
+        [class*=sidebar-dark-] .nav-sidebar>.nav-item.menu-open>.nav-link,
+        [class*=sidebar-dark-] .nav-sidebar>.nav-item:hover>.nav-link,
+        [class*=sidebar-dark-] .nav-sidebar>.nav-item>.nav-link:focus {
+            background-color: transparent
+        }
+        
+        .nav-item.active {
+            border-left: solid 5px #4eaabc
+        }
+        
+        .nav-item {
+            border-left: solid 5px transparent
+        }
+        
+        [class*=sidebar-dark-] .nav-sidebar>.nav-item>.nav-link.active {
+            box-shadow: none;
+        }
+        
+        .sidebar {
+            padding-left: 0px
+        }
+        
+        .nav-sidebar>.nav-item {
+            padding-top: 5px;
+            padding-bottom: 5px
+        }
+    </style>
+</head>
+
+<body class="scrol-custom hold-transition sidebar-mini" style="font-family: 'Rubik', sans-serif;">
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+
+
+    <!-- jQuery -->
+    <script src="static/plugins/jquery/jquery.min.js"></script>
+    <!--    <script src="static/plugins/jquery-ui/jquery-ui.min.js"></script>-->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="static/plugins/bootstrap/js/bootstrap.min.js"></script>
+
+
+    <!-- Select2 -->
+    <script src="static/plugins/select2/js/select2.full.min.js"></script>
+
+    <!-- AdminLTE App -->
+    <script src="static/dist/js/adminlte.min.js"></script>
+    <script src="static/dist/js/demo.js"></script>
+    <script>
+        $(function() {
+
+        })
+    </script>
+
+    <script>
+        // window.addEventListener('keydown', function (e) {
+        //  let code = e.which || e.keyCode;
+        //  if (code === 116) e.preventDefault();
+        //  else return true;
+        //    // fazer algo aqui para quando a tecla F5 for premida
+        // });
+        // if (window.toolbar.visible)
+        //  window.open(
+        //    window.location.href,
+        //    "null",
+        //    "toolbar=no, menubar=no, resizable=yes, location=no, titlebar=no, fullscreen=yes, scrollbars=yes,resizable=yes"
+        //  );
+    </script>
+
+    <!-- Toasts -->
+</body>
+
+</html>
