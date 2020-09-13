@@ -1,21 +1,13 @@
-# medias
+# Desafio Piperun
 
-> A Vue.js project
+Para executar o projeto corretamente é necessário antes executar o backend em http://127.0.0.1:8000
 
-## Build Setup
+## Configurações
 
 ``` bash
-# install dependencies
+# instalar dependencias
 npm install
 
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
+# sexecutar o servidor
+npm run start
 ```
-
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
