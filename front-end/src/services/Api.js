@@ -19,7 +19,7 @@ export default class Api {
 
         switch (method) {
             case 'get':
-                // console.log(this.config)
+                console.log({ config: this.config })
                 return axios.get(url, this.config).catch(this.errorNotAuthenticate)
             case 'post':
                 return axios.post(url, data, this.config).catch(this.errorNotAuthenticate)

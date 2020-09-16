@@ -36,7 +36,7 @@ new Vue({
         let api = new Api()
         try {
             if (!Storage.exists('token-user'))
-                this.$router.push('/login').catch()
+                this.$router.push('/login').catch(() => {});
             else {
                 let resp = await api.request({
                     url: 'auth/me',
@@ -44,7 +44,7 @@ new Vue({
                 })
             }
         } catch (e) {
-            this.$router.push('/login').catch()
+            this.$router.push('/login').catch(() => {});
             Storage.delete('token-user')
         }
 

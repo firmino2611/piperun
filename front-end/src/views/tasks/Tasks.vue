@@ -7,7 +7,7 @@ layout
         datepicker(
           v-model="filter.startAt",
           :language="lang",
-          :disabled-dates="disableStartFDate",
+          
           :days="[6, 0]",
           @input="setEndAt(filter)"
         )
@@ -100,7 +100,7 @@ layout
         label Tipo:
         select.form-control(v-model="task.type")
           option(v-for="(t, index) in types", :key="index", :value="t.id") {{ t.name }}
-      .col-md-12.form-group
+      .col-md-12.form-group(v-if="!task.status")
         .icheck-info
           input#enable.form-control(type="checkbox", v-model="task.status")
           label(for="enable") Concluído
@@ -320,7 +320,9 @@ export default {
   },
   async mounted() {
     this.load();
-    this.types = (await Type.list()).data;
+    Type.list().then(resp => {
+      this.types = resp.data
+    });
   },
 };
 </script>

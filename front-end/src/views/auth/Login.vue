@@ -46,7 +46,8 @@ export default {
             this.isValid = false;
           } else {
             Storage.store('token-user', response.data.access_token)
-            window.location.href = '/atividades'
+            // window.location.href = '/atividades'
+            this.$router.push('/atividades')
           }
         });
     },

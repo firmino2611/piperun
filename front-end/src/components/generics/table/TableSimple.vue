@@ -1,5 +1,5 @@
 <template>
-  <table class="table table-hover text-nowrap table-responsive-lg">
+  <table class="table table-hover text-nowrap table-responsive">
     <thead>
       <slot name="header" />
       <tr>

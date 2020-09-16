@@ -17,7 +17,7 @@ class Type extends Model
      * Recupera todas as tarefas vinculadas ao tipo
      * @return HasMany
      */
-    public function tasks ()
+    public function tasks()
     {
         return $this->hasMany(Task::class);
     }

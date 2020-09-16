@@ -13,21 +13,20 @@ class TypeRepository implements RepositoryInterface
         $this->model = $model;
     }
 
+    /**
+     * Recupera todos os registro do banco
+     * @return mixed
+     */
     public function getAll()
     {
         return auth()->user()->types;
     }
 
-    public function getById(int $id)
-    {
-        // TODO: Implement getById() method.
-    }
-
-    public function getBy(string $name, string $value)
-    {
-        // TODO: Implement getBy() method.
-    }
-
+    /**
+     * Cria um novo tipo no banco
+     * @param array $data
+     * @return array|mixed
+     */
     public function create(array $data)
     {
         $type = $this->model->newQuery()->create(array(
@@ -40,6 +39,12 @@ class TypeRepository implements RepositoryInterface
         );
     }
 
+    /**
+     * Atualiza um registro no banco
+     * @param int $id
+     * @param array $data
+     * @return array
+     */
     public function updateById(int $id, array $data)
     {
         $type = $this->model->newQuery()->find($id);
@@ -61,6 +66,11 @@ class TypeRepository implements RepositoryInterface
         );
     }
 
+    /**
+     * Remove do banco um registro
+     * @param int $id
+     * @return array
+     */
     public function deleteById(int $id)
     {
         $type = $this->model->newQuery()->find($id);

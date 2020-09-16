@@ -3,12 +3,8 @@
 namespace App\Repositories;
 
 use App\Models\Task;
-use App\Models\User;
 use App\Repositories\Contracts\RepositoryInterface;
-use Carbon\Traits\Date;
 use Exception;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use TaskValidation;
 
@@ -58,12 +54,11 @@ class TaskRepository implements RepositoryInterface
             return array(
                 'error' => 'A data final deve ser em uma data acima da data de inicio',
             );
-        $tasks = auth()->user()->tasks()->with('type')
+        return auth()->user()->tasks()->with('type')
             ->whereDate('end_at', '>=', getOnlyDate($start))
             ->whereDate('end_at', '<=', getOnlyDate($end))
             ->paginate(10);
 
-        return $tasks;
     }
 
     /**
@@ -72,11 +67,10 @@ class TaskRepository implements RepositoryInterface
      */
     public function getAll()
     {
-        $tasks = $this->model
+        return auth()->user()->tasks()
             ->with('type')->orderBy('start_at', 'desc')
             ->paginate(10);
 
-        return $tasks;
     }
 
 
@@ -124,6 +118,39 @@ class TaskRepository implements RepositoryInterface
                 'error' => $e->getMessage(),
                 'success' => false
             );
+        }
+    }
+
+    /**
+     * Verifica se existem atividades conflitantes
+     * com a data de ínicio e prazo final
+     * @param String $start
+     * @param String $end
+     * @param null $taskID
+     * @return bool|array
+     */
+    private function checkConflictDates($start, $end, $taskID = null)
+    {
+        try {
+            // Tenta recuperar atividades conflitantes com a data de inicio e prazo final
+            $taskOfUser = auth()->user()->tasks()
+                ->whereDate('start_at', '<=', $start)
+                ->whereDate('end_at', '>=', $start)
+                ->orWhereDate('start_at', '<=', $end)
+                ->whereDate('end_at', '>=', $end)
+                ->get();
+
+            if (count($taskOfUser)) {
+                foreach ($taskOfUser as $index => $task)
+                    if ($taskID == $task->id)
+                        unset($taskOfUser[$index]);
+
+                return $taskOfUser;
+            }
+
+            return [];
+        } catch (Exception $err) {
+            return [];
         }
     }
 
@@ -205,39 +232,6 @@ class TaskRepository implements RepositoryInterface
             return array(
                 'error' => $e->getMessage(),
             );
-        }
-    }
-
-    /**
-     * Verifica se existem atividades conflitantes
-     * com a data de ínicio e prazo final
-     * @param String $start
-     * @param String $end
-     * @param null $taskID
-     * @return bool|array
-     */
-    private function checkConflictDates($start, $end, $taskID = null)
-    {
-        try {
-            // Tenta recuperar atividades conflitantes com a data de inicio e prazo final
-            $taskOfUser = auth()->user()->tasks()
-                ->whereDate('start_at', '<=', $start)
-                ->whereDate('end_at', '>=', $start)
-                ->orWhereDate('start_at', '<=', $end)
-                ->whereDate('end_at', '>=', $end)
-                ->get();
-
-            if (count($taskOfUser)) {
-                foreach ($taskOfUser as $index => $task)
-                    if ($taskID == $task->id)
-                        unset($taskOfUser[$index]);
-
-                return $taskOfUser;
-            }
-
-            return [];
-        } catch (Exception $err) {
-            return [];
         }
     }
 
