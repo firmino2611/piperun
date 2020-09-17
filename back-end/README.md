@@ -9,6 +9,8 @@ composer install
 
 # criar o usuário padrão
 php artisan db:seed
+Email: admin@piperun.com.br
+Senha: admin
 
 # para executar o servidor
 php artisan serve
