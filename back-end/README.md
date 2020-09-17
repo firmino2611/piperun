@@ -6,13 +6,22 @@ API Rest para ser utilizada com a aplicação Vue JS
 ``` bash
 # instalar dependencias
 composer install
+```
 
-# criar o usuário padrão
+### Executar as migrations
+``` bash
+php artisan migrate
+```
+
+### Executar os seeders
+``` bash
 php artisan db:seed
 Email: admin@piperun.com.br
 Senha: admin
+```
 
-# para executar o servidor
+### Executar o servidor
+``` bash
 php artisan serve
 ```
-O script do banco está localizado na raiz do projeto.
+
