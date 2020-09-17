@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ErrorResource;
+use App\Http\Resources\TypeResource;
 use App\Repositories\TypeRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class TypeController extends Controller
 {
@@ -22,10 +23,7 @@ class TypeController extends Controller
      */
     public function index()
     {
-        return response()->json(
-            $this->type->getAll(),
-            200
-        );
+        return $this->type->getAll();
     }
 
     /**
@@ -35,36 +33,27 @@ class TypeController extends Controller
      */
     public function store(Request $request)
     {
-        return response()->json(
-            $this->type->create($request->all()),
-            200
-        );
+        return $this->type->create($request->all());
     }
 
     /**
      * Atualiza um registro de tipo
      * @param Request $request
      * @param int $id
-     * @return JsonResponse
+     * @return ErrorResource|TypeResource
      */
     public function update(Request $request, int $id)
     {
-        return response()->json(
-            $this->type->updateById($id, $request->all()),
-            200
-        );
+        return $this->type->updateById($id, $request->all());
     }
 
     /**
      * Excluir um tipo do banco de dados
      * @param $id
-     * @return JsonResponse
+     * @return ErrorResource|TypeResource
      */
     public function destroy($id)
     {
-        return response()->json(
-            $this->type->deleteById($id),
-            200
-        );
+        return $this->type->deleteById($id);
     }
 }

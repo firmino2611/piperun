@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\Contracts\RepositoryInterface;
+use App\Http\Resources\Collections\TaskCollection;
+use App\Http\Resources\ErrorResource;
+use App\Http\Resources\TaskResource;
 use App\Repositories\TaskRepository;
+use Exception;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use PhpParser\Node\Scalar\String_;
 
 class TaskController extends Controller
 {
@@ -20,13 +22,11 @@ class TaskController extends Controller
 
     /**
      * Recupera todas as atividades
-     * @return JsonResponse
+     * @return LengthAwarePaginator
      */
     public function index()
     {
-        return response()->json(
-            $this->task->getAll(),
-            200);
+        return $this->task->getAll();
     }
 
     /**
@@ -34,49 +34,48 @@ class TaskController extends Controller
      * range de datas enviadas
      * @param $start
      * @param $end
-     * @return JsonResponse
-     * @throws \Exception
+     * @return array|string[]
+     * @throws Exception
      */
     public function filterStart($start, $end)
     {
-        return response()->json(
-            $this->task->getAllStartDate($start, $end),
-            200);
+        return $this->task->getAllStartDate($start, $end);
     }
 
+    /**
+     * Recupera as atividades com prazo dentro o
+     * range de datas enviadas
+     * @param $start
+     * @param $end
+     * @return array|string[]
+     * @throws Exception
+     */
     public function filterEnd($start, $end)
     {
-        return response()->json(
-            $this->task->getAllEndDate($start, $end),
-            200);
+        return $this->task->getAllEndDate($start, $end);
     }
 
     /**
      * Cria uma nova atividade no banco de dados
      *
      * @param Request $request
-     * @return JsonResponse
+     * @return ErrorResource|TaskResource
      */
     public function store(Request $request)
     {
-        return response()->json(
-            $this->task->create($request->all(),
-            ), 200);
+        return $this->task->create($request->all());
     }
-
 
     /**
      * Atualiza uma atividade especifica
      *
      * @param Request $request
      * @param int $id
-     * @return JsonResponse
+     * @return TaskResource
      */
     public function update(Request $request, $id)
     {
-        return response()->json(
-            $this->task->updateById($id, $request->all(),
-            ), 200);
+        return $this->task->updateById($id, $request->all());
     }
 
     /**
@@ -87,8 +86,6 @@ class TaskController extends Controller
      */
     public function destroy($id)
     {
-        return response()->json(
-            $this->task->deleteById($id),
-            200);
+        return $this->task->deleteById($id);
     }
 }

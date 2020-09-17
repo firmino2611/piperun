@@ -23,13 +23,13 @@ class TaskValidation
         // Verificar se data não caiu em um final de semana
         try {
 
-            if (isWeekend($data['startAt']) or isWeekend($data['endAt']))
+            if (isWeekend($data['start_at']) or isWeekend( $data['end_at']))
                 return array(
                     'error' => 'Finais de semana não são permitidos',
                     'success' => false
                 );
 
-            if (dateEndIsValid($data['startAt'], $data['endAt']))
+            if (dateEndIsValid($data['start_at'], $data['end_at']))
                 return array(
                     'error' => 'O prazo deve ser em uma data acima da data de inicio',
                     'success' => false
@@ -46,6 +46,7 @@ class TaskValidation
         } catch (\Exception $e) {
             return array(
                 'error' => $e->getMessage(),
+                'success' => false
             );
         }
     }
@@ -58,8 +59,8 @@ class TaskValidation
      */
     static public function hasChangeDates($task, $data)
     {
-        if ($task->start_at != $data['start_at'] . ' 00:00:00'
-            || $task->end_at != $data['end_at'] . ' 00:00:00')
+        if ($task->start_at != $data['start_at']
+            || $task->end_at != $data['end_at'])
             return true;
 
         return false;

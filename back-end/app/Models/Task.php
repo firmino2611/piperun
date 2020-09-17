@@ -16,6 +16,7 @@ class Task extends Model
      * @var array
      */
     public $timestamps = [];
+
     /**
      * Especifica a tabela ao qual o model representa
      * @var string

@@ -2,6 +2,18 @@
 layout
   card(title="Tipos cadastrados", :show-footer="true", :padding="true")
     .row
+      .col-md-3
+        card(:padding="true", :show-header="false", :show-footer="true")
+          p Adicionar
+          .p-1.border.border-black(
+            :contentEditable="true",
+            @input="onInput($event)"
+          )
+          span(slot="footer")
+            i.fa.fa-save.text-primary.float-right(
+              v-if="type !== '' && isEdit === 0",
+              @click="save()"
+            )
       .col-md-3(v-for="(type, index) in types", :key="index")
         card(:padding="true", :show-header="false", :show-footer="true")
           .p-1(
@@ -19,18 +31,7 @@ layout
               @click="updateType(type)"
             )
 
-      .col-md-3
-        card(:padding="true", :show-header="false", :show-footer="true")
-          p Adicionar
-          .p-1.border.border-black(
-            :contentEditable="true",
-            @input="onInput($event)"
-          )
-          span(slot="footer")
-            i.fa.fa-save.text-primary.float-right(
-              v-if="type !== '' && isEdit === 0",
-              @click="save()"
-            )
+      
 </template>
 
 <script>
@@ -87,7 +88,7 @@ export default {
     },
     // Recupera o tipos cadastrados pelo usuário
     async load() {
-      this.types = (await Type.list()).data;
+      this.types = (await Type.list()).data.data;
     },
   },
   async mounted() {

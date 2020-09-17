@@ -1,6 +1,10 @@
 <?php
+
 namespace App\Repositories;
 
+use App\Http\Resources\Collections\TypeCollection;
+use App\Http\Resources\ErrorResource;
+use App\Http\Resources\TypeResource;
 use App\Models\Type;
 use App\Repositories\Contracts\RepositoryInterface;
 
@@ -19,7 +23,13 @@ class TypeRepository implements RepositoryInterface
      */
     public function getAll()
     {
-        return auth()->user()->types;
+        return (new TypeCollection(
+                auth()->user()
+                    ->types()->orderBy('name')
+                    ->get())
+            )
+            ->response()
+            ->setStatusCode(200);
     }
 
     /**
@@ -29,21 +39,27 @@ class TypeRepository implements RepositoryInterface
      */
     public function create(array $data)
     {
-        $type = $this->model->newQuery()->create(array(
-            'name' => $data['name'],
-            'user_id' => auth()->id()
-        ));
-        return array(
-            'data' => $type,
-            'success' => true
-        );
+        try {
+            $type = $this->model->newQuery()->create(array(
+                'name' => $data['name'],
+                'user_id' => auth()->id()
+            ));
+            return (new TypeResource($type))
+                ->response()
+                ->setStatusCode(201);
+
+        } catch (\Exception $error) {
+            return new ErrorResource(array(
+                'error' => $error->getMessage()
+            ));
+        }
     }
 
     /**
      * Atualiza um registro no banco
      * @param int $id
      * @param array $data
-     * @return array
+     * @return ErrorResource|TypeResource
      */
     public function updateById(int $id, array $data)
     {
@@ -54,22 +70,18 @@ class TypeRepository implements RepositoryInterface
                 'name' => $data['name'],
                 'user_id' => auth()->id()
             ));
-            return array(
-                'data' => $type,
-                'success' => false
-            );
+            return new TypeResource($type);
         }
 
-        return array(
+        return new ErrorResource(array(
             'error' => 'Tipo não encontrado',
-            'success' => false
-        );
+        ));
     }
 
     /**
      * Remove do banco um registro
      * @param int $id
-     * @return array
+     * @return ErrorResource|TypeResource
      */
     public function deleteById(int $id)
     {
@@ -77,23 +89,23 @@ class TypeRepository implements RepositoryInterface
 
         if ($type) {
             try {
-                $response = $type->delete($id);
+                if (count($type->tasks))
+                    return new ErrorResource([
+                        'error' => 'Este item está em uso e não pode ser apagado'
+                    ]);
 
-                return array(
-                    'data' => $response,
-                    'success' => true
-                );
+                $type->delete($id);
+
+                return new TypeResource($type);
             } catch (\Exception $e) {
-                return array(
+                return new ErrorResource(array(
                     'error' => $e->getMessage(),
-                    'success' => false
-                );
+                ));
             }
 
         }
-        return array(
+        return new ErrorResource(array(
             'error' => 'Tipo não encontrado',
-            'success' => false
-        );
+        ));
     }
 }

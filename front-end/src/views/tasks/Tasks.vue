@@ -5,16 +5,15 @@ layout
       .col-md-3
         label De
         datepicker(
-          v-model="filter.startAt",
+          v-model="filter.start_at",
           :language="lang",
-          
           :days="[6, 0]",
-          @input="setEndAt(filter)"
+          @input="setend_at(filter)"
         )
       .col-md-3
         label Até
         datepicker(
-          v-model="filter.endAt",
+          v-model="filter.end_at",
           :language="lang",
           :disabled-dates="disableEndDate",
           :days="[6, 0]"
@@ -24,7 +23,7 @@ layout
           style="margin-top: 30px",
           @click="getByFilter()"
         ) Filtrar
-      .col-md-3
+      .col-md-3(v-if="filterApply")
         button.btn.btn-default.float-left(
           style="margin-top: 30px",
           @click="cleanFilter()"
@@ -82,17 +81,19 @@ layout
       .col-md-12.form-group
         label Data ínicio
         datepicker(
-          v-model="task.startAt",
+          v-model="task.start_at",
           :language="lang",
           :disabled-dates="disableStartFDate",
           :days="[6, 0]",
-          @input="setEndAt(task)"
+          :disabled="task.status == 1 ? true : false",
+          @input="setend_at(task)"
         )
       .col-md-12.form-group
         label Prazo de entrega
         datepicker(
-          v-model="task.endAt",
+          v-model="task.end_at",
           :language="lang",
+          :disabled="task.status == 1 ? true : false",
           :disabled-dates="disableEndDate",
           :days="[6, 0]"
         )
@@ -149,8 +150,8 @@ export default {
     return {
       getOnlyDate,
       filter: {
-        startAt: moment().toDate(),
-        endAt: moment().add(1, "days").toDate(),
+        start_at: moment().toDate(),
+        end_at: moment().add(1, "days").toDate(),
       },
       disableStartFDate: {
         to: moment().subtract(1, "days").toDate(),
@@ -181,8 +182,8 @@ export default {
     // Limpa os filtros de pesquisa
     cleanFilter() {
       this.filter = {
-        startAt: moment().toDate(),
-        endAt: moment().add(1, "days").toDate(),
+        start_at: moment().toDate(),
+        end_at: moment().add(1, "days").toDate(),
       };
       this.filterApply = false;
       this.load(1);
@@ -192,25 +193,27 @@ export default {
       this.filterApply = true;
       Task.filter(this.filter).then((resp) => {
         this.tasks = resp.data.data;
-        this.total = resp.data.total;
-        this.perPage = resp.data.per_page;
+        this.total = resp.data.meta.total;
+        this.perPage = resp.data.meta.per_page;
         this.loading = false;
       });
     },
     // Marca uma atividade como concluida
     conclude(task) {
       Task.check(task).then((resp) => {
+        console.log({ check: resp });
         this.$toast.success("Atividade concluida");
-        this.load();
+        if (this.filterApply) this.getByFilter();
+        else this.load();
       });
     },
     // Configura as datas que devem ser bloqueadas no
     // Datepicker de acordo com a data enviada.
     // [element] elemento para ser manipulada, deve ser
-    // um objeto com os campos 'startAt' e 'endAt'
-    setEndAt(element) {
-      this.disableEndDate.to = moment(element.startAt).add(1, "days").toDate();
-      element.endAt = moment(element.startAt).add(1, "days").toDate();
+    // um objeto com os campos 'start_at' e 'end_at'
+    setend_at(element) {
+      this.disableEndDate.to = moment(element.start_at).add(1, "days").toDate();
+      element.end_at = moment(element.start_at).add(1, "days").toDate();
     },
     // Gera um objeto padrão para a atividade
     generateTaskDefault() {
@@ -219,15 +222,16 @@ export default {
         status: false,
         responsible: "",
         type: "",
-        startAt: moment().toDate(),
-        endAt: moment().add(1, "days").toDate(),
+        start_at: moment().toDate(),
+        end_at: moment().add(1, "days").toDate(),
       };
     },
     // Exclui uma atividade
     async deleteTask(id) {
       Task.delete(id).then((resp) => {
         this.$toast.success("Atividade excluida com sucesso!");
-        this.load();
+        if (this.filterApply) this.getByFilter();
+        else this.load();
       });
     },
     // Cria ou atualiza uma atividade
@@ -242,6 +246,8 @@ export default {
       } else {
         // atualizar
         Task.update(this.task).then((resp) => {
+          console.log({ check: resp });
+
           this.validateResponse(resp, {
             messageSuccess: "Atividade atualizada com sucesso!",
           });
@@ -255,12 +261,14 @@ export default {
     // [resp] objeto de resposa da requisição
     // { messageSuccess } mensagem em caso de sucesso na requisição
     validateResponse(resp, { messageSuccess }) {
+      console.log({ resp });
       if (resp.data.success) {
         this.$toast.success(messageSuccess);
         this.task = this.generateTaskDefault();
         this.$refs.modalEdit.hide();
       } else {
-        this.$toast.error(resp.data.error);
+        console.log({ err: resp.data });
+        this.$toast.error(resp.data.data.error);
       }
     },
     // Abre o modal para edição ou criação de atividade
@@ -270,9 +278,9 @@ export default {
         this.isUpdate = true;
         this.task = {
           ...task,
-          startAt: moment(task.start_at).toDate(),
-          endAt: moment(task.end_at).toDate(),
-          type: task.type_id,
+          start_at: moment(task.start_at).toDate(),
+          end_at: moment(task.end_at).toDate(),
+          type: task.type.id,
         };
       } else {
         this.task = this.generateTaskDefault();
@@ -284,8 +292,8 @@ export default {
     load() {
       Task.listPaginated(this.pageCurrent).then((resp) => {
         this.tasks = resp.data.data;
-        this.total = resp.data.total;
-        this.perPage = resp.data.per_page;
+        this.total = resp.data.meta.total;
+        this.perPage = resp.data.meta.per_page;
         this.loading = false;
       });
     },
@@ -320,8 +328,8 @@ export default {
   },
   async mounted() {
     this.load();
-    Type.list().then(resp => {
-      this.types = resp.data
+    Type.list().then((resp) => {
+      this.types = resp.data.data;
     });
   },
 };

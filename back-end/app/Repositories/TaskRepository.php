@@ -2,8 +2,12 @@
 
 namespace App\Repositories;
 
+use App\Http\Resources\Collections\TaskCollection;
+use App\Http\Resources\ErrorResource;
+use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use App\Repositories\Contracts\RepositoryInterface;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use TaskValidation;
@@ -22,22 +26,22 @@ class TaskRepository implements RepositoryInterface
      * para o inicio da atividade
      * @param $start
      * @param $end
-     * @return array
+     * @return TaskCollection|ErrorResource
      * @throws Exception
      */
     public function getAllStartDate($start, $end)
     {
         if (dateEndIsValid($start, $end))
-            return array(
+            return new ErrorResource(array(
                 'error' => 'O prazo deve ser em uma data acima da data de inicio',
-            );
+            ));
 
-        $tasks = auth()->user()->tasks()->with('type')
+        return new TaskCollection(auth()->user()->tasks()->with('type')
             ->whereDate('start_at', '>=', getOnlyDate($start))
             ->whereDate('start_at', '<=', getOnlyDate($end))
-            ->paginate(10);
+            ->orderBy('start_at', 'desc')
+            ->paginate(10));
 
-        return $tasks;
     }
 
     /**
@@ -45,50 +49,51 @@ class TaskRepository implements RepositoryInterface
      * para o prazo da atividade
      * @param $start
      * @param $end
-     * @return array
+     * @return TaskCollection|ErrorResource
      * @throws Exception
      */
     public function getAllEndDate($start, $end)
     {
         if (dateEndIsValid($start, $end))
-            return array(
+            return new ErrorResource(array(
                 'error' => 'A data final deve ser em uma data acima da data de inicio',
-            );
-        return auth()->user()->tasks()->with('type')
+            ));
+        return new TaskCollection(auth()->user()->tasks()->with('type')
             ->whereDate('end_at', '>=', getOnlyDate($start))
             ->whereDate('end_at', '<=', getOnlyDate($end))
-            ->paginate(10);
+            ->orderBy('start_at', 'desc')
+            ->paginate(10));
 
     }
 
     /**
      * Recupera todos os registros do banco
-     * @return LengthAwarePaginator
+     * @return TaskCollection
      */
     public function getAll()
     {
-        return auth()->user()->tasks()
-            ->with('type')->orderBy('start_at', 'desc')
-            ->paginate(10);
-
+        return new TaskCollection(auth()->user()->tasks()
+            ->orderBy('start_at', 'desc')
+            ->paginate(10));
     }
 
 
     /**
      * Cria uma nova tarefa no banco de dados
      * @param array $data
-     * @return array
+     * @return \Illuminate\Http\JsonResponse|object
      */
     public function create(array $data)
     {
-        $conflicts = $this->checkConflictDates($data['startAt'], $data['endAt']);
+        $conflicts = $this->checkConflictDates(
+            $data['start_at'],
+            $data['end_at']
+        );
 
         if (count($conflicts)) {
-            return array(
+            return new ErrorResource(array(
                 'error' => 'Conflito de datas',
-                'data' => $conflicts,
-                'success' => false
-            );
+            ));
         }
         // Caso não exista conflito de datas prossegue o cadastro no banco
         // Verificar se data não caiu em um final de semana
@@ -99,25 +104,22 @@ class TaskRepository implements RepositoryInterface
                     ->create(array(
                         'description' => $data['description'],
                         'responsible' => $data['responsible'],
-                        'start_at' => $data['startAt'],
-                        'end_at' => $data['endAt'],
+                        'start_at' => new Carbon($data['start_at']),
+                        'end_at' => new Carbon($data['end_at']),
                         'status' => $data['status'],
-                        'type_id' => $data['type'],
+                        'type_id' => $data['type'] ?? $data['type_id'],
                         'user_id' => auth()->id(),
                     ));
 
-                return array(
-                    'data' => $task,
-                    'success' => true
-                );
+                return (new TaskResource($task))->response()->setStatusCode(201);
             }
-            return $validation;
+            return new ErrorResource($validation);
 
         } catch (Exception $e) {
-            return array(
+            return new ErrorResource(array(
                 'error' => $e->getMessage(),
                 'success' => false
-            );
+            ));
         }
     }
 
@@ -158,7 +160,7 @@ class TaskRepository implements RepositoryInterface
      * Atualiza um registro do banco de dados
      * @param int $task
      * @param array $data
-     * @return array
+     * @return ErrorResource|TaskResource
      */
     public function updateById(int $task, array $data)
     {
@@ -166,54 +168,50 @@ class TaskRepository implements RepositoryInterface
         // Verificar se data não caiu em um final de semana
         try {
             $task = $this->model->newQuery()->find($task);
-            if ($task) {
 
+            if ($task) {
                 if (TaskValidation::hasChangeDates($task, $data)) {
                     $validation = TaskValidation::validate($data);
 
                     if (!$validation['success']) {
-                        return $validation;
+                        return new ErrorResource($validation);
                     }
 
                     $conflicts = $this->checkConflictDates(
-                        $data['startAt'],
-                        $data['endAt'],
+                        $data['start_at'],
+                        $data['end_at'],
                         $task->id
                     );
 
                     if (count($conflicts)) {
-                        return array(
+                        return new ErrorResource([
                             'error' => 'Conflito de datas',
-                            'data' => $conflicts
-                        );
+                            'success' => false
+                        ]);
                     }
                 }
                 $task->update(array(
                     'description' => $data['description'],
                     'responsible' => $data['responsible'],
-                    'start_at' => $data['startAt'],
-                    'end_at' => $data['endAt'],
-                    'finish_at' => $data['finishAt'] ?? $task->finish_at,
+                    'start_at' => new Carbon($data['start_at']),
+                    'end_at' => new Carbon($data['end_at']),
+                    'finish_at' => $data['finish_at'] ?? $task->finish_at,
                     'status' => $data['status'],
-                    'type_id' => $data['type'],
+                    'type_id' => $data['type'] ?? $task->type_id,
                     'user_id' => auth()->id(),
                 ));
-
-                return array(
-                    'data' => $task,
-                    'validation' => TaskValidation::hasChangeDates($task, $data),
-                    'success' => true
-                );
+                return new TaskResource($task);
             }
 
-            return array(
+            return new ErrorResource(array(
                 'error' => 'Atividade não encontrada',
-                'code' => 404
-            );
+                'success' => false
+            ));
         } catch (Exception $e) {
-            return array(
+            return new ErrorResource(array(
                 'error' => $e->getMessage(),
-            );
+                'success' => false
+            ));
         }
     }
 
@@ -225,13 +223,14 @@ class TaskRepository implements RepositoryInterface
     public function deleteById(int $id)
     {
         try {
-            $task = $this->model->newQuery()->find($id)->delete();
+            $task = $this->model->newQuery()->find($id);
+            $task->delete();
 
-            return $task;
+            return new TaskResource($task);
         } catch (Exception $e) {
-            return array(
+            return new ErrorResource(array(
                 'error' => $e->getMessage(),
-            );
+            ));
         }
     }
 

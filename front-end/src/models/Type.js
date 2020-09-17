@@ -1,11 +1,12 @@
 import Api from "../services/Api";
 
 const resource = 'types'
-const api = new Api()
 
 export default class Type {
 
     static async list() {
+        const api = new Api()
+
         return await api.request({
             url: `${resource}`,
             method: 'get'
@@ -13,6 +14,8 @@ export default class Type {
     }
 
     static async create(data) {
+        const api = new Api()
+
         return await api.request({
             url: `${resource}`,
             method: 'post',
@@ -21,6 +24,8 @@ export default class Type {
     }
 
     static async update(data) {
+        const api = new Api()
+
         return await api.request({
             url: `${resource}/${data.id}`,
             method: 'put',
@@ -29,6 +34,8 @@ export default class Type {
     }
 
     static async delete(data) {
+        const api = new Api()
+
         return await api.request({
             url: `${resource}/${data.id}`,
             method: 'delete'

@@ -10,8 +10,11 @@ class Type extends Model
 {
     use HasFactory;
 
+    /**
+     * Campos permitidos para armazenamento em massa
+     * @var string[]
+     */
     protected $fillable = ['name', 'user_id'];
-    public $timestamps = [];
 
     /**
      * Recupera todas as tarefas vinculadas ao tipo

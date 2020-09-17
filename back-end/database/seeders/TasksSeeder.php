@@ -39,11 +39,10 @@ class TasksSeeder extends Seeder
                 unset($months[$rand]);
                 return [
                     'start_at' => Carbon::now()->addMonths($rand),
-                    'end_at' => Carbon::now()->addMonths($rand)->addDays(1)
+                    'end_at' => Carbon::now()->addMonths($rand)->addDays(1),
+                    'type_id' => Type::all()->random(1)->first()->id
                 ];
             })
-            ->for(
-                Type::factory()->state([])
-            )->create();
+            ->create();
     }
 }

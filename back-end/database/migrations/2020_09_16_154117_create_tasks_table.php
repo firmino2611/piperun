@@ -17,8 +17,8 @@ class CreateTasksTable extends Migration
             $table->increments('id');
             $table->text('description');
             $table->string('responsible');
-            $table->timestamp('start_at');
-            $table->timestamp('end_at');
+            $table->date('start_at');
+            $table->date('end_at');
             $table->timestamp('finish_at')->nullable();
             $table->boolean('status')->default(0);
 
